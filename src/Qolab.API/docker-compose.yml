@@ -1,8 +1,14 @@
 version: '3.4'
 
 services:
+  qolabdb:
+    image: postgres
+
   qolab.api:
     image: ${DOCKER_REGISTRY-}qolabapi
     build:
       context: .
       dockerfile: Qolab.API/Dockerfile
+
+volumes:
+  postgres_data:
