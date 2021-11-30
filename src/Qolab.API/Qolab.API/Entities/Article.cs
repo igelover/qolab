@@ -12,7 +12,7 @@ namespace Qolab.API.Entities
         public string Summary { get; set; }
 
         [Required]
-        protected string Keywords { get; set; }
+        public string Keywords { get; set; }
 
         [NotMapped]
         public IEnumerable<string> Tags
@@ -35,5 +35,7 @@ namespace Qolab.API.Entities
         public int Dislikes { get; set; }
 
         public IList<Comment> Comments { get; set; }
+        
+        public IList<Question> Questions { get; set; }
     }
 }
