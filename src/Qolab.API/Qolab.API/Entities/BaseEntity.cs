@@ -7,12 +7,13 @@ namespace Qolab.API.Entities
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        public DateTimeOffset CreatedOn { get; set; } = DateTime.UtcNow;
+        [Required]
+        public User CreatedBy { get; set; }
 
-        public DateTimeOffset UpdatedOn { get; set; } = DateTimeOffset.UtcNow;
+        [Required]
+        public Guid CreatedById { get; set; }
 
-        public Guid CreatedBy { get; set; }
-
-        public Guid ModifiedBy { get; set; }
+        [Required]
+        public DateTimeOffset LastUpdated { get; set; } = DateTimeOffset.UtcNow;
     }
 }

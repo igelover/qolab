@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Qolab.API.Data;
+using Qolab.API.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("QolabDb");
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped(typeof(ArticlesManager));
 
 var app = builder.Build().MigrateDatabase();
 

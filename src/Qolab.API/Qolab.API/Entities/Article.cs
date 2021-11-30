@@ -1,31 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Qolab.API.Entities
 {
     public record Article : BaseEntity
     {
         [Required]
-
         public string Title { get; set; }
 
+        [Required]
         public string Summary { get; set; }
 
         [Required]
-        public string Keywords { get; set; }
-
-        [NotMapped]
-        public IEnumerable<string> Tags
-        {
-            get
-            {
-                return Keywords?.Split(';');
-            }
-            set
-            {
-                Keywords = string.Join(';', value);
-            }
-        }
+        public string Tags { get; set; }
 
         [Required]
         public string Content { get; set; }
@@ -34,8 +20,8 @@ namespace Qolab.API.Entities
 
         public int Dislikes { get; set; }
 
-        public IList<Comment> Comments { get; set; }
+        public IList<Comment>? Comments { get; set; }
         
-        public IList<Question> Questions { get; set; }
+        public IList<Question>? Questions { get; set; }
     }
 }

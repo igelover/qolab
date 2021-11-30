@@ -12,7 +12,7 @@ using Qolab.API.Data;
 namespace Qolab.API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20211130050050_InitialMigration")]
+    [Migration("20211130070712_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,11 +37,8 @@ namespace Qolab.API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Dislikes")
                         .HasColumnType("integer");
@@ -49,21 +46,20 @@ namespace Qolab.API.Data.Migrations
                     b.Property<bool>("IsAcceptedAnswer")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTimeOffset>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("Likes")
                         .HasColumnType("integer");
-
-                    b.Property<Guid>("ModifiedBy")
-                        .HasColumnType("uuid");
 
                     b.Property<Guid>("QuestionId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTimeOffset>("UpdatedOn")
-                        .HasColumnType("timestamp with time zone");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ArticleId");
+
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("QuestionId");
 
@@ -80,26 +76,23 @@ namespace Qolab.API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Dislikes")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Keywords")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTimeOffset>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Likes")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("ModifiedBy")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Tags")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -107,10 +100,9 @@ namespace Qolab.API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("UpdatedOn")
-                        .HasColumnType("timestamp with time zone");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("Article");
                 });
@@ -128,30 +120,26 @@ namespace Qolab.API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Dislikes")
                         .HasColumnType("integer");
 
+                    b.Property<DateTimeOffset>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("Likes")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("ModifiedBy")
+                    b.Property<Guid?>("ReplyToCommentId")
                         .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ReplyToComentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("UpdatedOn")
-                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ArticleId");
+
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("Comment");
                 });
@@ -169,32 +157,49 @@ namespace Qolab.API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Dislikes")
                         .HasColumnType("integer");
 
+                    b.Property<DateTimeOffset>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("Likes")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("ModifiedBy")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTimeOffset?>("ResolvedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("UpdatedOn")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ArticleId");
 
+                    b.HasIndex("CreatedById");
+
                     b.ToTable("Question");
+                });
+
+            modelBuilder.Entity("Qolab.API.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Qolab.API.Entities.Answer", b =>
@@ -202,6 +207,12 @@ namespace Qolab.API.Data.Migrations
                     b.HasOne("Qolab.API.Entities.Article", "Article")
                         .WithMany()
                         .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Qolab.API.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -213,7 +224,20 @@ namespace Qolab.API.Data.Migrations
 
                     b.Navigation("Article");
 
+                    b.Navigation("CreatedBy");
+
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("Qolab.API.Entities.Article", b =>
+                {
+                    b.HasOne("Qolab.API.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Qolab.API.Entities.Comment", b =>
@@ -224,7 +248,15 @@ namespace Qolab.API.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Qolab.API.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Article");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Qolab.API.Entities.Question", b =>
@@ -235,7 +267,15 @@ namespace Qolab.API.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Qolab.API.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Article");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Qolab.API.Entities.Article", b =>

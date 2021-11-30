@@ -2,6 +2,6 @@
 {
     public record Comment : AbstractComment
     {
-        public Guid? ReplyToComentId { get; set; }
+        public Guid? ReplyToCommentId { get; set; }
     }
 }
