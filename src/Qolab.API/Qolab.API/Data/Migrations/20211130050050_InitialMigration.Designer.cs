@@ -12,7 +12,7 @@ using Qolab.API.Data;
 namespace Qolab.API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20211130005240_InitialMigration")]
+    [Migration("20211130050050_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,6 +89,10 @@ namespace Qolab.API.Data.Migrations
                     b.Property<int>("Dislikes")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Keywords")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("Likes")
                         .HasColumnType("integer");
 
@@ -137,6 +141,9 @@ namespace Qolab.API.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<Guid>("ModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ReplyToComentId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("UpdatedOn")
@@ -223,7 +230,7 @@ namespace Qolab.API.Data.Migrations
             modelBuilder.Entity("Qolab.API.Entities.Question", b =>
                 {
                     b.HasOne("Qolab.API.Entities.Article", "Article")
-                        .WithMany()
+                        .WithMany("Questions")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -234,6 +241,8 @@ namespace Qolab.API.Data.Migrations
             modelBuilder.Entity("Qolab.API.Entities.Article", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("Qolab.API.Entities.Question", b =>

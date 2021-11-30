@@ -13,14 +13,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("QolabDb");
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(connectionString));
 
-var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
-optionsBuilder.UseNpgsql(connectionString);
-using (var context = new DataContext(optionsBuilder.Options))
-{
-    context.Database.EnsureCreated();
-}
-
-var app = builder.Build();
+var app = builder.Build().MigrateDatabase();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

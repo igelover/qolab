@@ -16,6 +16,7 @@ namespace Qolab.API.Data.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Summary = table.Column<string>(type: "text", nullable: false),
+                    Keywords = table.Column<string>(type: "text", nullable: false),
                     Content = table.Column<string>(type: "text", nullable: false),
                     Likes = table.Column<int>(type: "integer", nullable: false),
                     Dislikes = table.Column<int>(type: "integer", nullable: false),
@@ -34,6 +35,7 @@ namespace Qolab.API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ReplyToComentId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     UpdatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
