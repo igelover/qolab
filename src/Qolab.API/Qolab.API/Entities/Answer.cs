@@ -1,6 +1,6 @@
 ﻿namespace Qolab.API.Entities
 {
-    public record Answer : Comment
+    public record Answer : AbstractComment
     {
         public Question Question { get; set; }
 

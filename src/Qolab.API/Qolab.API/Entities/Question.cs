@@ -2,7 +2,7 @@
 
 namespace Qolab.API.Entities
 {
-    public record Question : Comment
+    public record Question : AbstractComment
     {
         [NotMapped]
         public bool IsResolved

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Qolab.API.Entities
 {
@@ -11,7 +12,20 @@ namespace Qolab.API.Entities
         public string Summary { get; set; }
 
         [Required]
-        public IEnumerable<string> Tags { get; set; }
+        protected string Keywords { get; set; }
+
+        [NotMapped]
+        public IEnumerable<string> Tags
+        {
+            get
+            {
+                return Keywords?.Split(';');
+            }
+            set
+            {
+                Keywords = string.Join(';', value);
+            }
+        }
 
         [Required]
         public string Content { get; set; }

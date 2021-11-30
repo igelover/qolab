@@ -1,7 +1,10 @@
-﻿namespace Qolab.API.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Qolab.API.Entities
 {
     public abstract record BaseEntity
     {
+        [Key]
         public Guid Id { get; set; }
 
         public DateTimeOffset CreatedOn { get; set; } = DateTime.UtcNow;
