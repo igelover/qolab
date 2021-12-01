@@ -17,14 +17,5 @@ namespace Qolab.API.Entities
         public int Likes { get; set; }
 
         public int Dislikes { get; set; }
-
-        [NotMapped]
-        public int Rank
-        {
-            get
-            {
-                return Likes - Dislikes;
-            }
-        }
     }
 }

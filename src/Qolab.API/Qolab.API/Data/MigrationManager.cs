@@ -21,7 +21,7 @@ namespace Qolab.API.Data
                     }
                     catch (Exception ex)
                     {
-                        //Log error
+                        // TODO: Add logging
                         throw;
                     }
                 }
@@ -31,12 +31,27 @@ namespace Qolab.API.Data
 
         public static void Seed(DataContext dataContext)
         {
-            var alice = new User { Id = Guid.Parse("8509b08d-d290-4e1f-95e8-f47c8ad2828e"), UserName = "alice" };
-            var bob = new User { Id = Guid.Parse("2e1ab555-0a05-4921-adbd-0d01d1a0340f"), UserName = "bob" };
-            var charlie = new User { Id = Guid.Parse("37889ca9-0bfc-426b-832e-5a9ed0edf98f"), UserName = "charlie" };
-            var eve = new User { Id = Guid.Parse("c747437e-16eb-4ad4-b68f-4915875f3b72"), UserName = "eve" };
+            var alice = new User { Id = Guid.Parse("8509b08d-d290-4e1f-95e8-f47c8ad2828e"), Username = "alice" };
+            var bob = new User { Id = Guid.Parse("2e1ab555-0a05-4921-adbd-0d01d1a0340f"), Username = "bob" };
+            var charlie = new User { Id = Guid.Parse("37889ca9-0bfc-426b-832e-5a9ed0edf98f"), Username = "charlie" };
+            var eve = new User { Id = Guid.Parse("c747437e-16eb-4ad4-b68f-4915875f3b72"), Username = "eve" };
 
             dataContext.Users.AddRange(new List<User> { alice, bob, charlie, eve });
+
+            var paperId = Guid.Parse("1601da1c-f7d9-4a18-acf6-eda0289a3bb3");
+            var paper = new Paper
+            {
+                Id = paperId,
+                Title = "Test Paper",
+                Authors = "John Doe, Groucho Marx University",
+                Abstract = "Ullamcorper a lacus vestibulum sed arcu non. Volutpat consequat mauris nunc congue nisi vitae. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. A pellentesque sit amet porttitor eget dolor. Et molestie ac feugiat sed lectus vestibulum mattis. Feugiat scelerisque varius morbi enim nunc. Nibh venenatis cras sed felis eget velit aliquet sagittis id. Magna fringilla urna porttitor rhoncus dolor purus non. Eu tincidunt tortor aliquam nulla facilisi. Felis eget velit aliquet sagittis id consectetur purus ut faucibus. Sit amet massa vitae tortor condimentum lacinia quis vel. Netus et malesuada fames ac turpis egestas integer. Tellus in metus vulputate eu scelerisque. Ut diam quam nulla porttitor massa id neque aliquam vestibulum.",
+                PublishYear = 2021,
+                PublishMonth = 12,
+                Url = "https://gitlab.com/qworld/qjam/2021/-/issues/10",
+                CreatedBy = charlie
+            };
+
+            dataContext.Papers.Add(paper);
 
             var articleId = Guid.Parse("95015b9f-1556-4df8-94be-6e4a94452196");
             var comment = new Comment
@@ -74,7 +89,7 @@ namespace Qolab.API.Data
                 }
             };
 
-            var article = new Article
+            var article = new Article()
             {
                 Id = articleId,
                 Title = "Test Article",
@@ -85,6 +100,7 @@ namespace Qolab.API.Data
                 Dislikes = 1,
                 Comments = new List<Comment> { comment, reply},
                 Questions = new List<Question> { question },
+                Paper = paper,
                 CreatedBy = alice
             };
 

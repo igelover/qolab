@@ -1,21 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Qolab.API.Data;
+using Qolab.API.Entities;
 using Qolab.API.Models;
+using System.Text.RegularExpressions;
 
 namespace Qolab.API.Managers
 {
     public class ArticlesManager
     {
+        private readonly IConfiguration _configuration;
         private readonly DataContext _context;
 
-        public ArticlesManager(DataContext context)
+        public ArticlesManager(IConfiguration configuration, DataContext context)
         {
+            _configuration = configuration;
             _context = context;
         }
 
-        public async Task<ArticleDto> GetArticleAsync(Guid id)
+        public async Task<ArticleDto?> GetArticleAsync(Guid id)
         {
-            var article = _context.Articles
+            var article = await _context.Articles
+                                  .Include(article => article.Paper)
+                                      .ThenInclude(paper => paper.Authors)
                                   .Include(article => article.CreatedBy)
                                   .Include(article => article.Comments)
                                       .ThenInclude(comment => comment.CreatedBy)
@@ -24,54 +32,98 @@ namespace Qolab.API.Managers
                                   .Include(article => article.Questions)
                                       .ThenInclude(question => question.Answers)
                                       .ThenInclude(answer => answer.CreatedBy)
-                                  .FirstOrDefault(x => x.Id == id);
-            
-            if (article == null)
+                                  .FirstOrDefaultAsync(x => x.Id == id);
+
+            return article?.ToDto();
+        }
+
+        public async Task<IEnumerable<ArticleShortDto>> SearchArticlesAsync(string searchTerm)
+        {
+            var query = @"SELECT a.id, a.title, a.summary, a.tags, a.likes, a.dislikes, a.last_updated,
+                          p.id, p.title, p.authors, p.publish_year, p.publish_month, p.publish_day, p.url, p.doi,
+                          u.id, u.username
+                          FROM articles as a
+                          INNER JOIN users as u on a.created_by_id = u.id
+                          LEFT JOIN papers as p on a.paper_id = p.id
+                          WHERE to_tsvector(a.title) @@ to_tsquery(@searchTerms)
+                          OR to_tsvector(a.summary) @@ to_tsquery(@searchTerms)
+                          OR to_tsvector(a.tags) @@ to_tsquery(@searchTerms)
+                          OR to_tsvector(a.content) @@ to_tsquery(@searchTerms);";
+
+            var searchTerms = searchTerm;
+            if (!searchTerm.Contains(" | ") && !searchTerm.Contains(" & ")
+                && !searchTerm.Contains(":*") && !Regex.IsMatch(searchTerm, @"<?>"))
             {
-                return null;
+                searchTerms = string.Join(" | ", searchTerm.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
-            return new ArticleDto
+            using var connection = new NpgsqlConnection(_configuration.GetConnectionString("QolabDb"));
+            var result = await connection.QueryAsync<Article, Paper, User, Article>(query,
+                (article, paper, user) =>
+                {
+                    article.Paper = paper;
+                    article.CreatedBy = user;
+                    return article;
+                },
+                new
+                {
+                    searchTerms
+                });
+
+            return result.Select(article => article.ToShortDto());
+        }
+
+        public async Task<ArticleDto> CreateArticleAsync(ArticleDto articleDto)
+        {
+            var article = new Article()
             {
-                Id = article.Id,
-                Title = article.Title,
-                Summary = article.Summary,
-                Tags = article.Tags?.Split(';'),
-                Content = article.Content,
-                Likes = article.Likes,
-                Dislikes = article.Dislikes,
-                CreatedBy = article.CreatedBy.UserName,
-                LastUpdated = article.LastUpdated,
-                Comments = article.Comments?.Select(comment => new CommentDto
-                {
-                    Id = comment.Id,
-                    ReplyToComentId = comment.ReplyToCommentId,
-                    Content = comment.Content,
-                    Likes = comment.Likes,
-                    Dislikes = comment.Dislikes,
-                    CreatedBy = comment.CreatedBy.UserName,
-                    LastUpdated = comment.LastUpdated
-                }),
-                Questions = article.Questions?.Select(question => new QuestionDto
-                {
-                    Id = question.Id,
-                    Content = question.Content,
-                    Likes = question.Likes,
-                    Dislikes = question.Dislikes,
-                    CreatedBy = question.CreatedBy.UserName,
-                    LastUpdated = question.LastUpdated,
-                    Answers = question.Answers?.Select(answer => new AnswerDto
-                    {
-                        Id = answer.Id,
-                        IsAcceptedAnswer = answer.IsAcceptedAnswer,
-                        Content = answer.Content,
-                        Likes = answer.Likes,
-                        Dislikes = answer.Dislikes,
-                        CreatedBy = answer.CreatedBy.UserName,
-                        LastUpdated = answer.LastUpdated,
-                    })
-                })
+                Title = articleDto.Title,
+                Summary = articleDto.Summary,
+                Tags = string.Join('¦', articleDto.Tags),
+                Content = articleDto.Content,
+                CreatedById = Guid.Parse(articleDto.CreatedBy)
             };
+            var entry = await _context.Articles.AddAsync(article);
+            await _context.SaveChangesAsync();
+            var newArticle = await _context.Articles
+                                           .Include(article => article.CreatedBy)
+                                           .FirstAsync(article => article.Id == entry.Entity.Id);
+            return newArticle.ToDto();
+        }
+
+        public async Task<Article?> UpdateArticleAsync(ArticleDto articleDto)
+        {
+            var article = _context.Articles.FirstOrDefault(article => article.Id == articleDto.Id);
+            if (article is not null)
+            {
+                article.Title = articleDto.Title;
+                article.Summary = articleDto.Summary;
+                article.Tags = string.Join('¦', articleDto.Tags);
+                article.Content = articleDto.Content;
+
+                _context.Entry(article).State = EntityState.Modified;
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // TODO: Add logging
+                    throw;
+                }
+            }
+            return article;
+        }
+
+        public async Task<Article?> DeleteArticleAsync(Guid id)
+        {
+            var article = _context.Articles.FirstOrDefault(article => article.Id == id);
+            if (article is not null)
+            {
+                _context.Articles.Remove(article);
+                await _context.SaveChangesAsync();
+            }
+            return article;
         }
     }
 }

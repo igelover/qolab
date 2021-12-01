@@ -7,8 +7,7 @@ namespace Qolab.API.Entities
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        [Required]
-        public User CreatedBy { get; set; }
+        public User? CreatedBy { get; set; }
 
         [Required]
         public Guid CreatedById { get; set; }

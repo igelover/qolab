@@ -7,6 +7,7 @@ namespace Qolab.API.Data
     public class DataContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<Paper> Papers { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Question> Questions { get; set; }
@@ -25,14 +26,14 @@ namespace Qolab.API.Data
                 .Build();
 
             var connectionString = configuration.GetConnectionString("QolabDb");
-            optionsBuilder.UseNpgsql(connectionString);
+            optionsBuilder.UseNpgsql(connectionString).UseSnakeCaseNamingConvention();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
             {
-                entityType.SetTableName(entityType.DisplayName());
+                entityType.SetTableName(entityType.GetTableName()?.ToLower());
             }
         }
     }
