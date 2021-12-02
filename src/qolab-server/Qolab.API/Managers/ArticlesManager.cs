@@ -110,7 +110,7 @@ namespace Qolab.API.Managers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                _logger.LogError("Error while updating the article", ex);
+                _logger.LogError(ex, "Error while updating article {articleId}", articleDto.Id);
                 throw;
             }
             return article;
@@ -128,13 +128,13 @@ namespace Qolab.API.Managers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error while deleting article", ex);
+                _logger.LogError(ex, "Error while deleting article {articleId}", id);
                 throw;
             }
             return article;
         }
 
-        public async Task<Article?> VoteArticleAsync(Guid id, Vote vote)
+        public async Task<Guid?> VoteArticleAsync(Guid id, Vote vote)
         {
             var article = _context.Articles.FirstOrDefault(article => article.Id == id);
             if (article == null) return null;
@@ -155,13 +155,13 @@ namespace Qolab.API.Managers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                _logger.LogError($"Error while {(vote == Vote.UpVote ? "up-voting" : "down-voting")} the article", ex);
+                _logger.LogError(ex, "Error while {voting} the article {articleId}", vote == Vote.UpVote ? "up-voting" : "down-voting", id);
                 throw;
             }
-            return article;
+            return article.Id;
         }
 
-        public async Task<ArticleDto?> AddArticleCommentAsync(Guid id, CommentDto comment)
+        public async Task<ArticleDto?> AddCommentAsync(Guid id, CommentDto comment)
         {
             var article = _context.Articles.FirstOrDefault(article => article.Id == id);
             if (article == null) return null;
@@ -171,7 +171,6 @@ namespace Qolab.API.Managers
                 _context.Comments.Add(new Comment
                 {
                     Article = article,
-                    ReplyToCommentId = comment.ReplyToComentId,
                     Content = comment.Content,
                     CreatedById = Guid.Parse(comment.CreatedBy)
                 });
@@ -179,10 +178,176 @@ namespace Qolab.API.Managers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                _logger.LogError($"Error while adding comment to the article", ex);
+                _logger.LogError(ex, "Error while adding a comment to article {articleId}", id);
                 throw;
             }
             return await GetArticleAsync(id);
+        }
+
+        public async Task<ArticleDto?> AddCommentReplyAsync(Guid id, Guid commentId, CommentDto comment)
+        {
+            var originalComment = _context.Comments.FirstOrDefault(c => c.ArticleId == id && c.Id == commentId);
+            if (originalComment == null) return null;
+
+            try
+            {
+                _context.Comments.Add(new Comment
+                {
+                    ArticleId = id,
+                    ReplyToCommentId = commentId,
+                    Content = comment.Content,
+                    CreatedById = Guid.Parse(comment.CreatedBy)
+                });
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Error while adding a reply to comment {commentId} on article {articleId}", commentId, id);
+                throw;
+            }
+            return await GetArticleAsync(id);
+        }
+
+        private async Task VoteAsync(AbstractComment entity, Vote vote)
+        {
+            switch (vote)
+            {
+                case Vote.UpVote:
+                    entity.Likes += 1;
+                    break;
+                case Vote.DownVote:
+                    entity.Dislikes += 1;
+                    break;
+            }
+            _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Guid?> VoteCommentAsync(Guid id, Guid commentId, Vote vote)
+        {
+            var comment = _context.Comments.FirstOrDefault(c => c.ArticleId == id && c.Id == commentId);
+            if (comment == null) return null;
+
+            try
+            {
+                await VoteAsync(comment, vote);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Error while {voting} the comment {commentId} on article {articleId}", vote == Vote.UpVote ? "up-voting" : "down-voting", commentId, id);
+                throw;
+            }
+            return comment.Id;
+        }
+
+        public async Task<ArticleDto?> AddQuestionAsync(Guid id, QuestionDto question)
+        {
+            var article = _context.Articles.FirstOrDefault(article => article.Id == id);
+            if (article == null) return null;
+
+            try
+            {
+                _context.Questions.Add(new Question
+                {
+                    ArticleId = id,
+                    Content = question.Content,
+                    CreatedById = Guid.Parse(question.CreatedBy)
+                });
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Error while adding a question to article {articleId}", id);
+                throw;
+            }
+            return await GetArticleAsync(id);
+        }
+
+        public async Task<Guid?> VoteQuestionAsync(Guid id, Guid questionId, Vote vote)
+        {
+            var question = _context.Questions.FirstOrDefault(c => c.ArticleId == id && c.Id == questionId);
+            if (question == null) return null;
+
+            try
+            {
+                await VoteAsync(question, vote);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Error while {voting} the question {questionId} on article {articleId}", vote == Vote.UpVote ? "up-voting" : "down-voting", questionId, id);
+                throw;
+            }
+            return question.Id;
+        }
+
+        public async Task<ArticleDto?> AddAnswerAsync(Guid id, Guid questionId, AnswerDto answer)
+        {
+            var question = _context.Questions.FirstOrDefault(q => q.ArticleId == id && q.Id == questionId);
+            if (question == null) return null;
+
+            try
+            {
+                _context.Answers.Add(new Answer
+                {
+                    ArticleId = id,
+                    QuestionId = questionId,
+                    Content = answer.Content,
+                    CreatedById = Guid.Parse(answer.CreatedBy)
+                });
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Error while adding an answer to question {questionId} on article {articleId}", questionId, id);
+                throw;
+            }
+            return await GetArticleAsync(id);
+        }
+
+        public async Task<Guid?> VoteAnswerAsync(Guid id, Guid questionId, Guid answerId, Vote vote)
+        {
+            var answer = _context.Answers.FirstOrDefault(a => a.ArticleId == id && a.QuestionId == questionId && a.Id == answerId);
+            if (answer == null) return null;
+
+            try
+            {
+                await VoteAsync(answer, vote);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Error while {voting} the answer {answerId} on article {articleId}", vote == Vote.UpVote ? "up-voting" : "down-voting", answerId, id);
+                throw;
+            }
+            return answer.Id;
+        }
+
+        public async Task<Guid?> MarkAcceptedAnswerAsync(Guid id, Guid questionId, Guid answerId)
+        {
+            var answer = _context.Answers
+                .Include(answer => answer.Question)
+                .FirstOrDefault(a => a.ArticleId == id && a.QuestionId == questionId && a.Id == answerId);
+
+            if (answer == null) return null;
+
+            if (answer.Question.ResolvedOn.HasValue)
+            {
+                return Guid.Empty;
+            }
+
+            answer.IsAcceptedAnswer = true;
+            answer.Question.ResolvedOn = DateTime.UtcNow;
+
+            try
+            {
+                _context.Entry(answer).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Error while marking answer {answerId} as accepted.", answerId);
+                throw;
+            }
+            return answer.Id;
         }
     }
 }

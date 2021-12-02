@@ -121,6 +121,7 @@ namespace Qolab.API.Entities
                 Likes = question.Likes,
                 Dislikes = question.Dislikes,
                 CreatedBy = question.CreatedBy!.Username,
+                ResolvedOn = question.ResolvedOn,
                 LastUpdated = question.LastUpdated,
                 Answers = question.Answers?.Select(answer => new AnswerDto
                 {
