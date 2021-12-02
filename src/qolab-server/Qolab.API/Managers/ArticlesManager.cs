@@ -23,7 +23,6 @@ namespace Qolab.API.Managers
         {
             var article = await _context.Articles
                                   .Include(article => article.Paper)
-                                      .ThenInclude(paper => paper.Authors)
                                   .Include(article => article.CreatedBy)
                                   .Include(article => article.Comments)
                                       .ThenInclude(comment => comment.CreatedBy)
