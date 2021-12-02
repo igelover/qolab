@@ -1,0 +1,232 @@
+$ \newcommand{\bra}[1]{\langle #1|} $
+$ \newcommand{\ket}[1]{|#1\rangle} $
+$ \newcommand{\braket}[2]{\langle #1|#2\rangle} $
+$ \newcommand{\dot}[2]{ #1 \cdot #2} $
+$ \newcommand{\biginner}[2]{\left\langle #1,#2\right\rangle} $
+$ \newcommand{\mymatrix}[2]{\left( \begin{array}{#1} #2\end{array} \right)} $
+$ \newcommand{\myvector}[1]{\mymatrix{c}{#1}} $
+$ \newcommand{\myrvector}[1]{\mymatrix{r}{#1}} $
+$ \newcommand{\mypar}[1]{\left( #1 \right)} $
+$ \newcommand{\mybigpar}[1]{ \Big( #1 \Big)} $
+$ \newcommand{\sqrttwo}{\frac{1}{\sqrt{2}}} $
+$ \newcommand{\dsqrttwo}{\dfrac{1}{\sqrt{2}}} $
+$ \newcommand{\onehalf}{\frac{1}{2}} $
+$ \newcommand{\donehalf}{\dfrac{1}{2}} $
+$ \newcommand{\hadamard}{ \mymatrix{rr}{ \sqrttwo & \sqrttwo \\ \sqrttwo & -\sqrttwo }} $
+$ \newcommand{\vzero}{\myvector{1\\0}} $
+$ \newcommand{\vone}{\myvector{0\\1}} $
+$ \newcommand{\stateplus}{\myvector{ \sqrttwo \\  \sqrttwo } } $
+$ \newcommand{\stateminus}{ \myrvector{ \sqrttwo \\ -\sqrttwo } } $
+$ \newcommand{\myarray}[2]{ \begin{array}{#1}#2\end{array}} $
+$ \newcommand{\X}{ \mymatrix{cc}{0 & 1 \\ 1 & 0}  } $
+$ \newcommand{\I}{ \mymatrix{rr}{1 & 0 \\ 0 & 1}  } $
+$ \newcommand{\Z}{ \mymatrix{rr}{1 & 0 \\ 0 & -1}  } $
+$ \newcommand{\Htwo}{ \mymatrix{rrrr}{ \frac{1}{2} & \frac{1}{2} & \frac{1}{2} & \frac{1}{2} \\ \frac{1}{2} & -\frac{1}{2} & \frac{1}{2} & -\frac{1}{2} \\ \frac{1}{2} & \frac{1}{2} & -\frac{1}{2} & -\frac{1}{2} \\ \frac{1}{2} & -\frac{1}{2} & -\frac{1}{2} & \frac{1}{2} } } $
+$ \newcommand{\CNOT}{ \mymatrix{cccc}{1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0} } $
+$ \newcommand{\norm}[1]{ \left\lVert #1 \right\rVert } $
+$ \newcommand{\pstate}[1]{ \lceil \mspace{-1mu} #1 \mspace{-1.5mu} \rfloor } $
+$ \newcommand{\greenbit}[1] {\mathbf{{\color{green}#1}}} $
+$ \newcommand{\bluebit}[1] {\mathbf{{\color{blue}#1}}} $
+$ \newcommand{\redbit}[1] {\mathbf{{\color{red}#1}}} $
+$ \newcommand{\brownbit}[1] {\mathbf{{\color{brown}#1}}} $
+$ \newcommand{\blackbit}[1] {\mathbf{{\color{black}#1}}} $
+
+# Vectors: One Dimensional lists
+
+_prepared by Abuzer Yakaryilmaz_
+
+
+A **vector** is a list of numbers. 
+
+Vectors are very useful to describe the state of a system, as we will see in the main tutorial. 
+
+A list is a single object in python.
+
+Similarly, a vector is a single mathematical object. 
+
+The number of elements in a list is its size or length.
+
+Similarly, the number of entries in a vector is called as the **size** or **dimension** of the vector.
+
+~~~
+# consider the following list with 4 elements 
+L = [1,-2,0,5]
+print(L)
+~~~
+
+Vectors can be in horizontal or vertical shape.
+
+We show this list as a _four dimensional_ **row vector** (horizontal) or a **column vector** (vertical):
+
+$$
+    u = \mypar{1~~-2~~0~~-5} ~~~\mbox{ or }~~~ v =\mymatrix{r}{1 \\ -2 \\ 0 \\ 5}, ~~~\mbox{ respectively.}
+$$
+
+Remark that we do not need to use any comma in vector representation.
+
+### Multiplying a vector with a number
+
+A vector can be multiplied by a number.
+
+Multiplication of a vector with a number is also a vector: each entry is multiplied by this number.
+
+$$
+    3 \cdot v = 3 \cdot  \mymatrix{r}{1 \\ -2 \\ 0 \\ 5} = \mymatrix{r}{3 \\ -6 \\ 0 \\ 15}
+    ~~~~~~\mbox{ or }~~~~~~
+    (-0.6) \cdot v = (-0.6) \cdot \mymatrix{r}{1 \\ -2 \\ 0 \\ 5} = \mymatrix{r}{-0.6 \\ 1.2 \\ 0 \\ -3}.
+$$
+
+We may consider this as enlarging or making smaller the entries of a vector.
+
+We verify our calculations in python.
+
+~~~
+# 3 * v
+v = [1,-2,0,5]
+print("v is",v)
+# we use the same list for the result
+for i in range(len(v)):
+    v[i] = 3 * v[i]
+print("3v is",v)
+
+# -0.6 * u
+# reinitialize the list v
+v = [1,-2,0,5]
+for i in range(len(v)):
+    v[i] = -0.6 * v[i]
+print("0.6v is",v)
+~~~
+
+### Summation of vectors
+
+Two vectors (with same dimension) can be summed up.
+
+The summation of two vectors is a vector: the numbers on the same entries are added up.
+
+$$
+    u = \myrvector{-3 \\ -2 \\ 0 \\ -1 \\ 4} \mbox{ and } v = \myrvector{-1\\ -1 \\2 \\ -3 \\ 5}.
+    ~~~~~~~ \mbox{Then, }~~
+    u+v = \myrvector{-3 \\ -2 \\ 0 \\ -1 \\ 4} + \myrvector{-1\\ -1 \\2 \\ -3 \\ 5} =
+    \myrvector{-3+(-1)\\ -2+(-1) \\0+2 \\ -1+(-3) \\ 4+5} = \myrvector{-4\\ -3 \\2 \\ -4 \\ 9}.
+$$
+
+We do the same calculations in Python.
+
+~~~
+u = [-3,-2,0,-1,4]
+v = [-1,-1,2,-3,5]
+result=[]
+for i in range(len(u)):
+    result.append(u[i]+v[i])
+
+print("u+v is",result)
+
+# print the result vector similarly to a column vector
+print() # print an empty line
+print("the elements of u+v are")
+for j in range(len(result)):
+    print(result[j])
+~~~
+
+### Task 1 
+
+Create two 7-dimensional vectors $u$ and $ v $ as two different lists in Python having entries randomly picked between $-10$ and $10$. 
+
+Print their entries.
+
+### Task 2 
+
+By using the same vectors, find the vector $  (3  u-2  v) $ and print its entries. Here $ 3u $ and $ 2v $ means $u$ and $v$ are multiplied by $3$ and $2$, respectively.
+
+### Visualization of vectors 
+
+We can visualize the vectors with dimension at most 3. 
+
+For simplicity, we give examples of 2-dimensional vectors. 
+
+Consider the vector $ v = \myvector{1 \\ 2} $. 
+
+A 2-dimensional vector can be represented on the two-dimensional plane by an arrow starting from the origin $ (0,0) $ to the point $ (1,2) $.
+
+As we can observe, after multiplying by 2, the vector is enlarged, and, after multiplying by $(-1)$, the vector is the same but its direction is opposite.
+
+### The length of a vector 
+
+The length of a vector is the (shortest) distance from the points represented by the entries of vector to the origin point $(0,0)$.
+
+The length of a vector can be calculated by using Pythagoras Theorem. 
+
+We visualize a vector, its length, and the contributions of each entry to the length. 
+
+Consider the vector $ u = \myrvector{-3 \\ 4} $.
+
+The length of $ u $ is denoted as $ \norm{u} $, and it is calculated as $ \norm{u} =\sqrt{(-3)^2+4^2} = 5 $. 
+
+Here each entry contributes with its square value. All contributions are summed up. Then, we obtain the square of the length. 
+
+This formula is generalized to any dimension. 
+
+We find the length of the following vector by using Python:
+ 
+$$
+    v = \myrvector{-1 \\ -3 \\ 5 \\ 3 \\ 1 \\ 2}
+    ~~~~~~~~~~
+    \mbox{and}
+    ~~~~~~~~~~
+    \norm{v} = \sqrt{(-1)^2+(-3)^2+5^2+3^2+1^2+2^2} .
+$$
+
+Remember: There is a short way of writing power operation in Python. 
+- In its generic form: $ a^x $ can be denoted by $ a ** x $ in Python. 
+- The square of a number $a$: $ a^2 $ can be denoted by $ a ** 2 $ in Python. 
+- The square root of a number $ a $: $ \sqrt{a} = a^{\frac{1}{2}} = a^{0.5} $ can be denoted by $ a ** 0.5 $ in Python.
+
+~~~
+v = [-1,-3,5,3,1,2]
+
+length_square=0
+for i in range(len(v)):
+    print(v[i],":square ->",v[i]**2) # print each entry and its square value
+    length_square = length_square + v[i]**2 # sum up the square of each entry
+
+length = length_square ** 0.5 # take the square root of the summation of the squares of all entries
+print("the summation is",length_square)
+print("then the length is",length)
+
+# for square root, we can also use built-in function math.sqrt
+print() # print an empty line
+from math import sqrt
+print("the square root of",length_square,"is",sqrt(length_square))
+~~~
+
+### Task 3 
+
+Let $ u = \myrvector{1 \\ -2 \\ -4 \\ 2} $ be a four dimensional vector.
+
+Verify that $ \norm{4 u} = 4 \cdot \norm{u} $ in Python. 
+
+Remark that $ 4u $ is another vector obtained from $ u $ by multiplying it with 4. 
+
+### Notes:
+
+When a vector is multiplied by a number, then its length is also multiplied with the same number.
+
+But, we should be careful with the sign.
+
+Consider the vector $ -3 v $. It has the same length of $ 3v $, but its direction is opposite.
+
+So, when calculating the length of $ -3 v $, we use absolute value of the number:
+
+$ \norm{-3 v} = |-3| \norm{v} = 3 \norm{v}  $.
+
+Here $ |-3| $ is the absolute value of $ -3 $. 
+
+The absolute value of a number is its distance to 0. So, $ |-3| = 3 $.
+
+### Task 4 
+
+Let $ u = \myrvector{1 \\ -2 \\ -4 \\ 2} $ be a four dimensional vector.
+
+Randomly pick a number $r$ from $ \left\{ \dfrac{1}{10}, \dfrac{2}{10}, \cdots, \dfrac{9}{10} \right\} $.
+
+Find the vector $(-r)\cdot u$ and then its length.

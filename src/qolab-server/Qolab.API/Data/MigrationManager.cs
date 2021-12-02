@@ -89,13 +89,13 @@ namespace Qolab.API.Data
                 }
             };
 
-            var article = new Article()
+            var article1 = new Article()
             {
                 Id = articleId,
                 Title = "Test Article",
                 Summary = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                Tags = "test;markdown",
-                Content = File.ReadAllText(@"./Data/MarkdownSample.txt"),
+                Tags = "test¦markdown",
+                Content = File.ReadAllText(@"./Data/Seed/Article1.txt"),
                 Likes = 123,
                 Dislikes = 1,
                 Comments = new List<Comment> { comment, reply},
@@ -104,7 +104,16 @@ namespace Qolab.API.Data
                 CreatedBy = alice
             };
 
-            dataContext.Articles.Add(article);
+            var article2 = new Article()
+            {
+                Title = "Vectors: One Dimensional lists",
+                Summary = "Vectors are very useful to describe the state of a system, as we will see in the main tutorial.",
+                Tags = "math¦vectors¦python",
+                Content = File.ReadAllText(@"./Data/Seed/Article2.txt"),
+                CreatedBy = bob
+            };
+
+            dataContext.Articles.AddRange(article1, article2);
 
             dataContext.SaveChanges();
         }
