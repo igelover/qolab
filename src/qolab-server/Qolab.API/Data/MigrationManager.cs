@@ -21,7 +21,7 @@ namespace Qolab.API.Data
                     }
                     catch (Exception ex)
                     {
-                        // TODO: Add logging
+                        app.Logger.LogError("Error while migrating and seeding the DB.", ex);
                         throw;
                     }
                 }

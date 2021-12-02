@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Qolab.API.Managers;
 using Qolab.API.Models;
+using static Qolab.API.Models.Enums;
 
 namespace Qolab.API.Controllers
 {
@@ -16,7 +17,7 @@ namespace Qolab.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ArticleDto>> GetArticle(Guid id)
+        public async Task<ActionResult<ArticleDto>> GetArticle([FromRoute] Guid id)
         {
             var article = await _manager.GetArticleAsync(id);
 
@@ -29,7 +30,7 @@ namespace Qolab.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ArticleShortDto>>> SearchArticles(string searchTerm)
+        public async Task<ActionResult<IEnumerable<ArticleShortDto>>> SearchArticles([FromQuery] string searchTerm)
         {
             if (string.IsNullOrEmpty(searchTerm))
             {
@@ -41,14 +42,14 @@ namespace Qolab.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ArticleDto>> CreateArticle(ArticleDto article)
+        public async Task<ActionResult<ArticleDto>> CreateArticle([FromBody] ArticleDto article)
         {
             var result = await _manager.CreateArticleAsync(article);
             return CreatedAtAction(nameof(GetArticle), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateArticle(Guid id, ArticleDto article)
+        public async Task<IActionResult> UpdateArticle([FromRoute] Guid id, [FromBody] ArticleDto article)
         {
             if (id != article.Id)
             {
@@ -62,10 +63,24 @@ namespace Qolab.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteArticle(Guid id)
+        public async Task<IActionResult> DeleteArticle([FromRoute] Guid id)
         {
             // TODO: Add article owner validation
             var result = await _manager.DeleteArticleAsync(id);
+            return result is null ? NotFound() : NoContent();
+        }
+
+        [HttpPost("{id}/up-vote")]
+        public async Task<IActionResult> UpVoteArticle([FromRoute] Guid id)
+        {
+            var result = await _manager.VoteArticleAsync(id, Vote.UpVote);
+            return result is null ? NotFound() : NoContent();
+        }
+
+        [HttpPost("{id}/down-vote")]
+        public async Task<IActionResult> DownVoteArticle([FromRoute] Guid id)
+        {
+            var result = await _manager.VoteArticleAsync(id, Vote.DownVote);
             return result is null ? NotFound() : NoContent();
         }
     }

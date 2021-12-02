@@ -5,16 +5,19 @@ using Qolab.API.Data;
 using Qolab.API.Entities;
 using Qolab.API.Models;
 using System.Text.RegularExpressions;
+using static Qolab.API.Models.Enums;
 
 namespace Qolab.API.Managers
 {
     public class ArticlesManager
     {
+        private readonly ILogger<ArticlesManager> _logger;
         private readonly IConfiguration _configuration;
         private readonly DataContext _context;
 
-        public ArticlesManager(IConfiguration configuration, DataContext context)
+        public ArticlesManager(ILogger<ArticlesManager> logger, IConfiguration configuration, DataContext context)
         {
+            _logger = logger;
             _configuration = configuration;
             _context = context;
         }
@@ -105,9 +108,9 @@ namespace Qolab.API.Managers
                 {
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
-                    // TODO: Add logging
+                    _logger.LogError("Error while updating the article", ex);
                     throw;
                 }
             }
@@ -121,6 +124,34 @@ namespace Qolab.API.Managers
             {
                 _context.Articles.Remove(article);
                 await _context.SaveChangesAsync();
+            }
+            return article;
+        }
+
+        public async Task<Article?> VoteArticleAsync(Guid id, Vote vote)
+        {
+            var article = _context.Articles.FirstOrDefault(article => article.Id == id);
+            if (article is not null)
+            {
+                _context.Entry(article).State = EntityState.Modified;
+                try
+                {
+                    switch (vote)
+                    {
+                        case Vote.UpVote:
+                            article.Likes += 1;
+                            break;
+                        case Vote.DownVote:
+                            article.Dislikes += 1;
+                            break;
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    _logger.LogError($"Error while {(vote == Vote.UpVote ? "up-voting" : "down-voting")} the article", ex);
+                    throw;
+                }
             }
             return article;
         }
