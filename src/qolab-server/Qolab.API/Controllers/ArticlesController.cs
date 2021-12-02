@@ -83,5 +83,14 @@ namespace Qolab.API.Controllers
             var result = await _manager.VoteArticleAsync(id, Vote.DownVote);
             return result is null ? NotFound() : NoContent();
         }
+
+        [HttpPost("{id}/comments")]
+        public async Task<ActionResult<ArticleDto>> AddArticleComment([FromRoute] Guid id, [FromBody] CommentDto comment)
+        {
+            // TODO: Add article owner validation
+
+            var result = await _manager.AddArticleCommentAsync(id, comment);
+            return result is null ? NotFound() : Ok(result);
+        }
     }
 }

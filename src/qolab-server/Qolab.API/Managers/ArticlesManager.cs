@@ -96,23 +96,22 @@ namespace Qolab.API.Managers
         public async Task<Article?> UpdateArticleAsync(ArticleDto articleDto)
         {
             var article = _context.Articles.FirstOrDefault(article => article.Id == articleDto.Id);
-            if (article is not null)
-            {
-                article.Title = articleDto.Title;
-                article.Summary = articleDto.Summary;
-                article.Tags = string.Join('¦', articleDto.Tags);
-                article.Content = articleDto.Content;
+            if (article == null) return null;
 
+            article.Title = articleDto.Title;
+            article.Summary = articleDto.Summary;
+            article.Tags = string.Join('¦', articleDto.Tags);
+            article.Content = articleDto.Content;
+
+            try
+            {
                 _context.Entry(article).State = EntityState.Modified;
-                try
-                {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException ex)
-                {
-                    _logger.LogError("Error while updating the article", ex);
-                    throw;
-                }
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError("Error while updating the article", ex);
+                throw;
             }
             return article;
         }
@@ -120,10 +119,17 @@ namespace Qolab.API.Managers
         public async Task<Article?> DeleteArticleAsync(Guid id)
         {
             var article = _context.Articles.FirstOrDefault(article => article.Id == id);
-            if (article is not null)
+            if (article == null) return null;
+
+            try
             {
                 _context.Articles.Remove(article);
                 await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error while deleting article", ex);
+                throw;
             }
             return article;
         }
@@ -131,29 +137,52 @@ namespace Qolab.API.Managers
         public async Task<Article?> VoteArticleAsync(Guid id, Vote vote)
         {
             var article = _context.Articles.FirstOrDefault(article => article.Id == id);
-            if (article is not null)
+            if (article == null) return null;
+
+            switch (vote)
+            {
+                case Vote.UpVote:
+                    article.Likes += 1;
+                    break;
+                case Vote.DownVote:
+                    article.Dislikes += 1;
+                    break;
+            }
+            try
             {
                 _context.Entry(article).State = EntityState.Modified;
-                try
-                {
-                    switch (vote)
-                    {
-                        case Vote.UpVote:
-                            article.Likes += 1;
-                            break;
-                        case Vote.DownVote:
-                            article.Dislikes += 1;
-                            break;
-                    }
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException ex)
-                {
-                    _logger.LogError($"Error while {(vote == Vote.UpVote ? "up-voting" : "down-voting")} the article", ex);
-                    throw;
-                }
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError($"Error while {(vote == Vote.UpVote ? "up-voting" : "down-voting")} the article", ex);
+                throw;
             }
             return article;
+        }
+
+        public async Task<ArticleDto?> AddArticleCommentAsync(Guid id, CommentDto comment)
+        {
+            var article = _context.Articles.FirstOrDefault(article => article.Id == id);
+            if (article == null) return null;
+
+            try
+            {
+                _context.Comments.Add(new Comment
+                {
+                    Article = article,
+                    ReplyToCommentId = comment.ReplyToComentId,
+                    Content = comment.Content,
+                    CreatedById = Guid.Parse(comment.CreatedBy)
+                });
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError($"Error while adding comment to the article", ex);
+                throw;
+            }
+            return await GetArticleAsync(id);
         }
     }
 }

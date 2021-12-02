@@ -90,7 +90,7 @@ namespace Qolab.API.Entities
             {
                 for (int i = 0; i < comments.Count; i++)
                 {
-                    var replies = Comments!.Where(comment => comment.ReplyToCommentId == comment.Id)
+                    var replies = Comments!.Where(comment => comment.ReplyToCommentId == comments[i].Id)
                                            .OrderByDescending(comment => (comment.Likes - comment.Dislikes))
                                            .ThenByDescending(comment => comment.LastUpdated);
                     comments.InsertRange(i + 1, replies);
