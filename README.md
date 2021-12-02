@@ -19,6 +19,9 @@ Scientific work revolves around papers and articles, and there are already platf
 # Target Outcome
 The deliverable will be a proof of concept of the main ideas behind the project motivation. A Minimum Viable Product (MVP) that can be tested and feedback gathered, so the product can be enhanced on future iterations by either the same team or others.
   
+# Build and Run
+Please refer to the instructions [here](./docs/Build.md) to build and run the application.
+
 # Submission | Summary Report 📝
 <!-- Short Summary of your project for the judges. Should not exceed 500 words. You can fill this in the later stages of the JAM close to submission -->
 To be updated
