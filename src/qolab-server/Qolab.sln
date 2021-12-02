@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31911.260
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qolab.API", "Qolab.API\Qolab.API.csproj", "{32299F45-75DB-4A02-B660-1304DDABCDE4}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{72FF7E26-AC58-4247-8DBF-339FA78E0F36}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32299F45-75DB-4A02-B660-1304DDABCDE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32299F45-75DB-4A02-B660-1304DDABCDE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32299F45-75DB-4A02-B660-1304DDABCDE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32299F45-75DB-4A02-B660-1304DDABCDE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72FF7E26-AC58-4247-8DBF-339FA78E0F36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72FF7E26-AC58-4247-8DBF-339FA78E0F36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72FF7E26-AC58-4247-8DBF-339FA78E0F36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72FF7E26-AC58-4247-8DBF-339FA78E0F36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59F5FC3C-B15B-4458-AFB1-FFA2DE601E54}
+	EndGlobalSection
+EndGlobal

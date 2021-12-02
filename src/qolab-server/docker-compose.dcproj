@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <ProjectGuid>8c88c108-5a40-4ec0-95d9-42682a2fe755</ProjectGuid>
+    <ProjectGuid>72ff7e26-ac58-4247-8dbf-339fa78e0f36</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
     <DockerServiceName>qolab.api</DockerServiceName>

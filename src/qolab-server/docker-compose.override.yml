@@ -17,7 +17,7 @@ services:
     container_name: qolab.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionSting=Server=qolabdb;Port=5432;Database=QolabDb;User Id=admin;Password=admin1234;"
+      - "DatabaseSettings__ConnectionString=Server=qolabdb;Port=5432;Database=QolabDb;User Id=admin;Password=admin1234;"
     depends_on:
       - qolabdb
     ports:

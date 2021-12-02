@@ -12,7 +12,7 @@ using Qolab.API.Data;
 namespace Qolab.API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20211201073410_InitialMigration")]
+    [Migration("20211202044921_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
