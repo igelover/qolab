@@ -26,6 +26,7 @@ builder.Services.AddSwaggerGen(c =>
 var connectionString = builder.Configuration.GetConnectionString("QolabDb");
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(connectionString));
 
+builder.Services.AddScoped(typeof(PapersManager));
 builder.Services.AddScoped(typeof(ArticlesManager));
 
 var app = builder.Build().MigrateDatabase();

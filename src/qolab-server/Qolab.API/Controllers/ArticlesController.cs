@@ -63,7 +63,7 @@ namespace Qolab.API.Controllers
         /// Createas a new article entry on the DB
         /// </summary>
         /// <param name="article">The article to create</param>
-        /// <returns>The artcile created</returns>
+        /// <returns>The article created</returns>
         [HttpPost]
         public async Task<ActionResult<ArticleDto>> CreateArticle([FromBody] ArticleDto article)
         {

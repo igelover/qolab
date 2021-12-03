@@ -40,17 +40,7 @@ namespace Qolab.API.Entities
                 CreatedById = CreatedBy!.Id,
                 CreatedBy = CreatedBy!.Username,
                 LastUpdated = LastUpdated,
-                Paper = Paper is null ? null : new PaperDto
-                {
-                    Id = Paper.Id,
-                    Title = Paper.Title,
-                    Authors = Paper.Authors.Split('¦'),
-                    PublishDate = GetPublishDate(Paper.PublishYear, Paper.PublishMonth, Paper.PublishDay),
-                    Url = Paper.Url,
-                    DOI = Paper.DOI,
-                    CreatedById = Paper.CreatedBy!.Id,
-                    CreatedBy = Paper.CreatedBy!.Username,
-                }
+                Paper = Paper?.ToDto()
             };
         }
 
@@ -68,18 +58,7 @@ namespace Qolab.API.Entities
                 CreatedById = CreatedBy!.Id,
                 CreatedBy = CreatedBy!.Username,
                 LastUpdated = LastUpdated,
-                Paper = Paper is null ? null: new PaperDto
-                {
-                    Id = Paper.Id,
-                    Title = Paper.Title,
-                    Authors = Paper.Authors.Split('¦'),
-                    Abstract = Paper.Abstract,
-                    PublishDate = GetPublishDate(Paper.PublishYear, Paper.PublishMonth, Paper.PublishDay),
-                    Url = Paper.Url,
-                    DOI = Paper.DOI,
-                    CreatedById = Paper.CreatedBy!.Id,
-                    CreatedBy = Paper.CreatedBy!.Username,
-                },
+                Paper = Paper?.ToDto(),
                 Comments = GetComments(),
                 Questions = GetQuestions()
             };
@@ -144,21 +123,6 @@ namespace Qolab.API.Entities
                 }).OrderByDescending(answer => answer.Likes - answer.Dislikes)
                   .ThenByDescending(answer => answer.LastUpdated)
             });
-        }
-
-        private static string? GetPublishDate(int? publishYear, int? publishMonth, int? publishDay)
-        {
-            if (publishYear.HasValue && publishMonth.HasValue && publishDay.HasValue)
-            {
-                var aux = new DateTime(publishYear.Value, publishMonth.Value, publishDay.Value);
-                return aux.ToString("MMM dd, yyyy");
-            }
-            if (publishYear.HasValue && publishMonth.HasValue)
-            {
-                var aux = new DateTime(publishYear.Value, publishMonth.Value, 1);
-                return aux.ToString("MMM, yyyy");
-            }
-            return publishYear?.ToString();
         }
     }
 }
