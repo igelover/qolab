@@ -26,6 +26,7 @@ namespace Qolab.API.Managers
         {
             var article = await _context.Articles
                                   .Include(article => article.Paper)
+                                      .ThenInclude(paper => paper.CreatedBy)
                                   .Include(article => article.CreatedBy)
                                   .Include(article => article.Comments)
                                       .ThenInclude(comment => comment.CreatedBy)
@@ -42,11 +43,13 @@ namespace Qolab.API.Managers
         public async Task<IEnumerable<ArticleShortDto>> SearchArticlesAsync(string searchTerm)
         {
             var query = @"SELECT a.id, a.title, a.summary, a.tags, a.likes, a.dislikes, a.last_updated,
+                          ua.id, ua.username,
                           p.id, p.title, p.authors, p.publish_year, p.publish_month, p.publish_day, p.url, p.doi,
-                          u.id, u.username
+                          up.id, up.username
                           FROM articles as a
-                          INNER JOIN users as u on a.created_by_id = u.id
+                          INNER JOIN users as ua on a.created_by_id = ua.id
                           LEFT JOIN papers as p on a.paper_id = p.id
+                          LEFT JOIN users as up on p.created_by_id = up.id
                           WHERE to_tsvector(a.title) @@ to_tsquery(@searchTerms)
                           OR to_tsvector(a.summary) @@ to_tsquery(@searchTerms)
                           OR to_tsvector(a.tags) @@ to_tsquery(@searchTerms)
@@ -60,11 +63,15 @@ namespace Qolab.API.Managers
             }
 
             using var connection = new NpgsqlConnection(_configuration.GetConnectionString("QolabDb"));
-            var result = await connection.QueryAsync<Article, Paper, User, Article>(query,
-                (article, paper, user) =>
+            var result = await connection.QueryAsync<Article, User, Paper, User, Article>(query,
+                (article, articleUser, paper, paperUser) =>
                 {
                     article.Paper = paper;
-                    article.CreatedBy = user;
+                    if (article.Paper is not null)
+                    {
+                        article.Paper.CreatedBy = paperUser;
+                    }
+                    article.CreatedBy = articleUser;
                     return article;
                 },
                 new
@@ -83,7 +90,7 @@ namespace Qolab.API.Managers
                 Summary = articleDto.Summary,
                 Tags = string.Join('¦', articleDto.Tags),
                 Content = articleDto.Content,
-                CreatedById = Guid.Parse(articleDto.CreatedBy)
+                CreatedById = articleDto.CreatedById
             };
             var entry = await _context.Articles.AddAsync(article);
             await _context.SaveChangesAsync();
@@ -172,7 +179,7 @@ namespace Qolab.API.Managers
                 {
                     Article = article,
                     Content = comment.Content,
-                    CreatedById = Guid.Parse(comment.CreatedBy)
+                    CreatedById = comment.CreatedById
                 });
                 await _context.SaveChangesAsync();
             }
@@ -196,7 +203,7 @@ namespace Qolab.API.Managers
                     ArticleId = id,
                     ReplyToCommentId = commentId,
                     Content = comment.Content,
-                    CreatedById = Guid.Parse(comment.CreatedBy)
+                    CreatedById = comment.CreatedById
                 });
                 await _context.SaveChangesAsync();
             }
@@ -251,7 +258,7 @@ namespace Qolab.API.Managers
                 {
                     ArticleId = id,
                     Content = question.Content,
-                    CreatedById = Guid.Parse(question.CreatedBy)
+                    CreatedById = question.CreatedById
                 });
                 await _context.SaveChangesAsync();
             }
@@ -292,7 +299,7 @@ namespace Qolab.API.Managers
                     ArticleId = id,
                     QuestionId = questionId,
                     Content = answer.Content,
-                    CreatedById = Guid.Parse(answer.CreatedBy)
+                    CreatedById = answer.CreatedById
                 });
                 await _context.SaveChangesAsync();
             }

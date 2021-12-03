@@ -9,7 +9,8 @@
         public DateTimeOffset? ResolvedOn { get; set; }
         public bool IsResolved { get { return ResolvedOn.HasValue; } }
         public IEnumerable<AnswerDto>? Answers { get; set; }
-        public string CreatedBy { get; set; }
+        public Guid CreatedById { get; set; }
+        public string? CreatedBy { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
     }
 }

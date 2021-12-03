@@ -12,7 +12,8 @@
         public int Dislikes { get; set; }
         public IEnumerable<CommentDto>? Comments { get; set; }
         public IEnumerable<QuestionDto>? Questions { get; set; }
-        public string CreatedBy { get; set; }
+        public Guid CreatedById { get; set; }
+        public string? CreatedBy { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
     }
 }

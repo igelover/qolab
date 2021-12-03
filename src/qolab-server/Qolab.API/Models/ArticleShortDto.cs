@@ -9,7 +9,8 @@
         public IEnumerable<string> Tags { get; set; }
         public int Likes { get; set; }
         public int Dislikes { get; set; }
-        public string CreatedBy { get; set; }
+        public Guid CreatedById { get; set; }
+        public string? CreatedBy { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
     }
 }

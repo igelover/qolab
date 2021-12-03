@@ -9,5 +9,8 @@
         public string? PublishDate { get; set; }
         public string? Url { get; set; }
         public string? DOI { get; set; }
+        public Guid CreatedById { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTimeOffset LastUpdated { get; set; }
     }
 }

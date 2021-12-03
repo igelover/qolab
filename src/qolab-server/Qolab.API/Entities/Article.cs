@@ -37,6 +37,7 @@ namespace Qolab.API.Entities
                 Tags = Tags.Split('¦'),
                 Likes = Likes,
                 Dislikes = Dislikes,
+                CreatedById = CreatedBy!.Id,
                 CreatedBy = CreatedBy!.Username,
                 LastUpdated = LastUpdated,
                 Paper = Paper is null ? null : new PaperDto
@@ -46,7 +47,9 @@ namespace Qolab.API.Entities
                     Authors = Paper.Authors.Split('¦'),
                     PublishDate = GetPublishDate(Paper.PublishYear, Paper.PublishMonth, Paper.PublishDay),
                     Url = Paper.Url,
-                    DOI = Paper.DOI
+                    DOI = Paper.DOI,
+                    CreatedById = Paper.CreatedBy!.Id,
+                    CreatedBy = Paper.CreatedBy!.Username,
                 }
             };
         }
@@ -62,6 +65,7 @@ namespace Qolab.API.Entities
                 Content = Content,
                 Likes = Likes,
                 Dislikes = Dislikes,
+                CreatedById = CreatedBy!.Id,
                 CreatedBy = CreatedBy!.Username,
                 LastUpdated = LastUpdated,
                 Paper = Paper is null ? null: new PaperDto
@@ -72,7 +76,9 @@ namespace Qolab.API.Entities
                     Abstract = Paper.Abstract,
                     PublishDate = GetPublishDate(Paper.PublishYear, Paper.PublishMonth, Paper.PublishDay),
                     Url = Paper.Url,
-                    DOI = Paper.DOI
+                    DOI = Paper.DOI,
+                    CreatedById = Paper.CreatedBy!.Id,
+                    CreatedBy = Paper.CreatedBy!.Username,
                 },
                 Comments = GetComments(),
                 Questions = GetQuestions()
@@ -103,6 +109,7 @@ namespace Qolab.API.Entities
                 Content = comment.Content,
                 Likes = comment.Likes,
                 Dislikes = comment.Dislikes,
+                CreatedById = comment.CreatedBy!.Id,
                 CreatedBy = comment.CreatedBy!.Username,
                 LastUpdated = comment.LastUpdated
             });
@@ -120,6 +127,7 @@ namespace Qolab.API.Entities
                 Content = question.Content,
                 Likes = question.Likes,
                 Dislikes = question.Dislikes,
+                CreatedById = question.CreatedBy!.Id,
                 CreatedBy = question.CreatedBy!.Username,
                 ResolvedOn = question.ResolvedOn,
                 LastUpdated = question.LastUpdated,
@@ -130,6 +138,7 @@ namespace Qolab.API.Entities
                     Content = answer.Content,
                     Likes = answer.Likes,
                     Dislikes = answer.Dislikes,
+                    CreatedById = answer.CreatedBy!.Id,
                     CreatedBy = answer.CreatedBy!.Username,
                     LastUpdated = answer.LastUpdated,
                 }).OrderByDescending(answer => answer.Likes - answer.Dislikes)
