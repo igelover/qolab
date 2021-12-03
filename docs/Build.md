@@ -36,7 +36,7 @@ Wait until you see a confirmation message that all containers are up and running
 
 ![docker](docker.jpg "docker-compose result")
 
-At this time, only the back-end is available and we'll update this document whith instructions to run the front-end when it becomes available.
+At this time, only the back-end is available and we'll update this document with instructions to run the front-end when it becomes available.
 
 In order to test the API, please open a browser and paste thsi URL
 
@@ -44,6 +44,10 @@ In order to test the API, please open a browser and paste thsi URL
 http://localhost:8000/swagger/index.html
 ~~~
 
-There you can test the available enedpoint usgin swagger
+There you can test the available endpoints using swagger
 
 ![swagger](swagger.jpg "Test using swagger")
+
+For example
+
+![example](example.jpg "Full text search example")

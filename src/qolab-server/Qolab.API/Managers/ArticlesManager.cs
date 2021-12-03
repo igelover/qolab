@@ -93,7 +93,7 @@ namespace Qolab.API.Managers
             return newArticle.ToDto();
         }
 
-        public async Task<Article?> UpdateArticleAsync(ArticleDto articleDto)
+        public async Task<ArticleDto?> UpdateArticleAsync(ArticleDto articleDto)
         {
             var article = _context.Articles.FirstOrDefault(article => article.Id == articleDto.Id);
             if (article == null) return null;
@@ -107,13 +107,13 @@ namespace Qolab.API.Managers
             {
                 _context.Entry(article).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
+                return await GetArticleAsync(articleDto.Id);
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 _logger.LogError(ex, "Error while updating article {articleId}", articleDto.Id);
                 throw;
             }
-            return article;
         }
 
         public async Task<Article?> DeleteArticleAsync(Guid id)
