@@ -1,0 +1,132 @@
+$ \newcommand{\bra}[1]{\langle #1|} $
+$ \newcommand{\ket}[1]{|#1\rangle} $
+$ \newcommand{\braket}[2]{\langle #1|#2\rangle} $
+$ \newcommand{\dot}[2]{ #1 \cdot #2} $
+$ \newcommand{\biginner}[2]{\left\langle #1,#2\right\rangle} $
+$ \newcommand{\mymatrix}[2]{\left( \begin{array}{#1} #2\end{array} \right)} $
+$ \newcommand{\myvector}[1]{\mymatrix{c}{#1}} $
+$ \newcommand{\myrvector}[1]{\mymatrix{r}{#1}} $
+$ \newcommand{\mypar}[1]{\left( #1 \right)} $
+$ \newcommand{\mybigpar}[1]{ \Big( #1 \Big)} $
+$ \newcommand{\sqrttwo}{\frac{1}{\sqrt{2}}} $
+$ \newcommand{\dsqrttwo}{\dfrac{1}{\sqrt{2}}} $
+$ \newcommand{\onehalf}{\frac{1}{2}} $
+$ \newcommand{\donehalf}{\dfrac{1}{2}} $
+$ \newcommand{\hadamard}{ \mymatrix{rr}{ \sqrttwo & \sqrttwo \\ \sqrttwo & -\sqrttwo }} $
+$ \newcommand{\vzero}{\myvector{1\\0}} $
+$ \newcommand{\vone}{\myvector{0\\1}} $
+$ \newcommand{\stateplus}{\myvector{ \sqrttwo \\  \sqrttwo } } $
+$ \newcommand{\stateminus}{ \myrvector{ \sqrttwo \\ -\sqrttwo } } $
+$ \newcommand{\myarray}[2]{ \begin{array}{#1}#2\end{array}} $
+$ \newcommand{\X}{ \mymatrix{cc}{0 & 1 \\ 1 & 0}  } $
+$ \newcommand{\I}{ \mymatrix{rr}{1 & 0 \\ 0 & 1}  } $
+$ \newcommand{\Z}{ \mymatrix{rr}{1 & 0 \\ 0 & -1}  } $
+$ \newcommand{\Htwo}{ \mymatrix{rrrr}{ \frac{1}{2} & \frac{1}{2} & \frac{1}{2} & \frac{1}{2} \\ \frac{1}{2} & -\frac{1}{2} & \frac{1}{2} & -\frac{1}{2} \\ \frac{1}{2} & \frac{1}{2} & -\frac{1}{2} & -\frac{1}{2} \\ \frac{1}{2} & -\frac{1}{2} & -\frac{1}{2} & \frac{1}{2} } } $
+$ \newcommand{\CNOT}{ \mymatrix{cccc}{1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0} } $
+$ \newcommand{\norm}[1]{ \left\lVert #1 \right\rVert } $
+$ \newcommand{\pstate}[1]{ \lceil \mspace{-1mu} #1 \mspace{-1.5mu} \rfloor } $
+$ \newcommand{\greenbit}[1] {\mathbf{{\color{green}#1}}} $
+$ \newcommand{\bluebit}[1] {\mathbf{{\color{blue}#1}}} $
+$ \newcommand{\redbit}[1] {\mathbf{{\color{red}#1}}} $
+$ \newcommand{\brownbit}[1] {\mathbf{{\color{brown}#1}}} $
+$ \newcommand{\blackbit}[1] {\mathbf{{\color{black}#1}}} $
+
+# Discrete Fourier Transform
+Transformations are popular in mathematics and computer science. They help *transforming* a problem into another problem whose solution is known. In this notebook we will cover *Fourier Transform*. 
+Discrete Fourier Transform ($DFT$) is a mapping that transforms a set of complex numbers into another set of complex numbers.
+Suppose that we have an $N$-dimensional complex vector $x=\myvector{x_0~x_1\dots~x_{N-1}}^T$. $DFT$ of $x$ is the complex vector $y=\myvector{y_0~y_1\dots y_{N-1}}^T$ where
+
+
+$$
+y_k=\frac{1}{\sqrt{N}} \sum_{j=0}^{N-1}e^{\frac{2\pi i j k }{N}}x_j.
+$$
+###Task 1 (on paper)
+
+Given $x=\myvector{1 \\ 2}$, apply $DFT$ and obtain $y$.
+###Solution 
+In this example $N=2$, $x_0=1$ and $x_1=2$. Hence, we have
+
+$$y_k=\frac{1}{\sqrt{2}} \sum_{j=0}^{1}e^{\frac{2\pi i j k}{2}}x_j.$$
+Replacing $k=0$,
+
+$$
+y_0=\frac{1}{\sqrt{2}} \sum_{j=0}^{1}e^{\frac{2\pi ij\cdot 0}{2} }x_j= \frac{1}{\sqrt{2}}  (x_0+x_1) = \frac{3}{\sqrt{2}}
+$$
+and $k=1$,
+
+$$
+y_1=\frac{1}{\sqrt{2}} \sum_{j=0}^{1}e^{\frac{2\pi ij\cdot 1}{2}}x_j= \frac{1}{\sqrt{2}} \biggl( e^{\frac{2\pi i \cdot0 \cdot1}{2}} x_0 +  e^{\frac{2\pi i \cdot 1 \cdot 1}{2}} x_1 \biggr)  = \frac{1+  2e^{\pi i}}{\sqrt{2}}=\frac{-1}{\sqrt{2}}.
+$$
+We can conclude that $y=\myvector{\frac{3}{\sqrt{2}} \\ \frac{-1}{\sqrt{2}} }  $.
+
+###Task 2
+
+Create the following list in Python (1 0 0 0 0 1 0 0 0 0 ... 1 0 0 0 0) of length $N=100$ where every 5'th value is a 1. Then compute its $DFT$ using Python and visualize.
+
+###Solution 
+#Create an empty list
+x=[]
+#Number of elements in the list
+N=100
+#We set every fifth number as a 1
+for i in range(N):
+    if i%5==0:
+        x.append(1)
+    else:
+        x.append(0)
+from cmath import exp
+from math import pi
+from math import sqrt
+
+#We calculate Fourier Transform of the list 
+y=[]
+for k in range(N):
+    s=0
+    for j in range(N):
+        s+= exp(2*pi*1j*j*k/N)*x[j]
+    s*=1/sqrt(N)    
+    y.append(s)
+
+print(y)
+
+import matplotlib.pyplot as plt
+#Visualizing the trasformed list
+plt.plot(y)
+plt.show()
+
+###Task 3
+
+Repeat Task 2 where this time every 6'th value is a 1 and the rest is 0.
+###Solution 
+#Create an empty list
+x=[]
+#Number of elements in the list
+N=100
+#We set every sixth number as a 1
+for i in range(N):
+    if i%6==0:
+        x.append(1)
+    else:
+        x.append(0)
+
+from cmath import exp
+from math import pi
+from math import sqrt
+
+#We calculate Fourier Transform of the list 
+y=[]
+for k in range(N):
+    s=0
+    for j in range(N):
+        s+= exp(2*pi*1j*j*k/N)*x[j]
+    s*=1/sqrt(N)    
+    y.append(s)
+
+import matplotlib.pyplot as plt
+#Visualizing the trasformed list
+plt.plot(y)
+plt.show()
+
+What you should have observed from the previous two tasks is when a periodic list of numbers is provided as input to $DFT$, then the transformed list have peaks around the integer multiples of $N/r$ where $N$ is the number of elements in the list and $r$ is the period.
+
+This property of the Fourier Transform will be useful for us in the future, when we start talking about order finding and Shor's Algorithm.

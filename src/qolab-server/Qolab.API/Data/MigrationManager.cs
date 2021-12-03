@@ -114,7 +114,34 @@ namespace Qolab.API.Data
                 CreatedBy = bob
             };
 
-            dataContext.Articles.AddRange(article1, article2);
+            var article3 = new Article()
+            {
+                Title = "Mathematical Notations",
+                Summary = "In this article, we will provide some mathematical terms and notations that will be useful in later notebooks.",
+                Tags = "math¦notation¦python",
+                Content = File.ReadAllText(@"./Data/Seed/Article3.txt"),
+                CreatedBy = bob
+            };
+
+            var article4 = new Article()
+            {
+                Title = "Discrete Fourier Transform",
+                Summary = "Transformations are popular in mathematics and computer science. They help transforming a problem into another problem whose solution is known. In this article we will cover Fourier Transform.",
+                Tags = "math¦fourier¦transformation¦python",
+                Content = File.ReadAllText(@"./Data/Seed/Article4.txt"),
+                CreatedBy = bob
+            };
+
+            var article5 = new Article()
+            {
+                Title = "Quantum states with complex numbers",
+                Summary = "In this article we will see that the main properties of quantum states do not change whether we are using complex numbers or not.",
+                Tags = "math¦complex¦numbers¦quantum¦states¦python",
+                Content = File.ReadAllText(@"./Data/Seed/Article2.txt"),
+                CreatedBy = bob
+            };
+
+            dataContext.Articles.AddRange(article1, article2, article3, article4, article5);
 
             dataContext.SaveChanges();
         }

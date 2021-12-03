@@ -1,0 +1,107 @@
+$ \newcommand{\bra}[1]{\langle #1|} $
+$ \newcommand{\ket}[1]{|#1\rangle} $
+$ \newcommand{\braket}[2]{\langle #1|#2\rangle} $
+$ \newcommand{\dot}[2]{ #1 \cdot #2} $
+$ \newcommand{\biginner}[2]{\left\langle #1,#2\right\rangle} $
+$ \newcommand{\mymatrix}[2]{\left( \begin{array}{#1} #2\end{array} \right)} $
+$ \newcommand{\myvector}[1]{\mymatrix{c}{#1}} $
+$ \newcommand{\myrvector}[1]{\mymatrix{r}{#1}} $
+$ \newcommand{\mypar}[1]{\left( #1 \right)} $
+$ \newcommand{\mybigpar}[1]{ \Big( #1 \Big)} $
+$ \newcommand{\sqrttwo}{\frac{1}{\sqrt{2}}} $
+$ \newcommand{\dsqrttwo}{\dfrac{1}{\sqrt{2}}} $
+$ \newcommand{\onehalf}{\frac{1}{2}} $
+$ \newcommand{\donehalf}{\dfrac{1}{2}} $
+$ \newcommand{\hadamard}{ \mymatrix{rr}{ \sqrttwo & \sqrttwo \\ \sqrttwo & -\sqrttwo }} $
+$ \newcommand{\vzero}{\myvector{1\\0}} $
+$ \newcommand{\vone}{\myvector{0\\1}} $
+$ \newcommand{\stateplus}{\myvector{ \sqrttwo \\  \sqrttwo } } $
+$ \newcommand{\stateminus}{ \myrvector{ \sqrttwo \\ -\sqrttwo } } $
+$ \newcommand{\myarray}[2]{ \begin{array}{#1}#2\end{array}} $
+$ \newcommand{\X}{ \mymatrix{cc}{0 & 1 \\ 1 & 0}  } $
+$ \newcommand{\I}{ \mymatrix{rr}{1 & 0 \\ 0 & 1}  } $
+$ \newcommand{\Z}{ \mymatrix{rr}{1 & 0 \\ 0 & -1}  } $
+$ \newcommand{\Htwo}{ \mymatrix{rrrr}{ \frac{1}{2} & \frac{1}{2} & \frac{1}{2} & \frac{1}{2} \\ \frac{1}{2} & -\frac{1}{2} & \frac{1}{2} & -\frac{1}{2} \\ \frac{1}{2} & \frac{1}{2} & -\frac{1}{2} & -\frac{1}{2} \\ \frac{1}{2} & -\frac{1}{2} & -\frac{1}{2} & \frac{1}{2} } } $
+$ \newcommand{\CNOT}{ \mymatrix{cccc}{1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0} } $
+$ \newcommand{\norm}[1]{ \left\lVert #1 \right\rVert } $
+$ \newcommand{\pstate}[1]{ \lceil \mspace{-1mu} #1 \mspace{-1.5mu} \rfloor } $
+$ \newcommand{\greenbit}[1] {\mathbf{{\color{green}#1}}} $
+$ \newcommand{\bluebit}[1] {\mathbf{{\color{blue}#1}}} $
+$ \newcommand{\redbit}[1] {\mathbf{{\color{red}#1}}} $
+$ \newcommand{\brownbit}[1] {\mathbf{{\color{brown}#1}}} $
+$ \newcommand{\blackbit}[1] {\mathbf{{\color{black}#1}}} $
+
+# Mathematical Notations
+In this notebook, we will provide some mathematical terms and notations that will be useful in later notebooks. 
+
+We will be interested in $\mathbb{C}^n$, the space of all $ n $-tuples of complex numbers and will be finite-dimensional, which significantly simplifies the mathematics we need. Such vector spaces are members of a class of vector spaces called Hilbert space.
+
+## Dirac Notation
+
+Dirac notation is the quantum mathematical notation for vectors. 
+
+Column vectors are represented as $\ket{\psi}$ where $\psi$ is the label of the vector and $\ket{~}$ is called _ket_.
+
+$\bra{~}$ is called _bra_ and $\bra{\psi}$ is called the _dual_ of vector $\ket{\psi}$.
+
+$ \bra{v}= v^{\dagger}  = \mymatrix{ccc}{\alpha_{1}^* & \dots & \alpha_{n}^*} $, that is the transpose of the complex conjugate of the column vector $v = \mymatrix{ccc}{\alpha_{1} & \dots & \alpha_{n}}^T $.
+
+<h3> Task 1 </h3>
+
+ Consider the two quantum states $ \ket{\psi}=\dsqrttwo \ket{0} - \dfrac{i}{\sqrt{2}} \ket{1} $ and $ \ket{\phi} = \dsqrttwo \ket{0} + \dfrac{i}{\sqrt{2}}\ket{1}  $.  Compute $ \bra{\psi}$ and $\bra{\phi}$. 
+
+<h3> Solution </h3>
+$\ket{\psi}$ and $\ket{\phi}$ correspond to column vectors. We compute the conjugate transpose.
+
+$ \bra{\psi}=\left (\dsqrttwo ~~~ \dfrac{i}{\sqrt{2}} \right )$ and $ \bra{\phi} =\left( \dsqrttwo  ~~ - \dfrac{i}{\sqrt{2}} \right )  $
+
+## Inner product
+
+An _inner product_ is a function which takes as an input two vectors $\ket{v}$ and $\ket{w}$ from a vector space and produces a complex number. $\mathbb{C}^n$ has inner product defined by dot product.
+
+Considering the following vectors: $\mymatrix{c}{y_{1} \\ \vdots \\ y_{n}}$ and $\mymatrix{c}{z_{1} \\ \vdots \\ z_{n}}$ we can perform dot product as $\mymatrix{ccc}{y_{1}^* & \dots & y_{n}^*} \cdot \mymatrix{c}{z_{1} \\ \vdots \\ z_{n}} = \sum_{i}y_{i}^*z_{i}$.
+
+Dot product of vectors $\ket{v}$ and $\ket{w}$ is denoted by $\braket{v}{w}$. Vectors $\ket{v}$ and $\ket{w}$ are called _orthogonal_ if $\braket{v}{w}$ = 0.
+_Norm_ is defined as $\Vert$ $\ket{v}$ $\Vert$ = $\sqrt{\braket{v}{v}}$. A vector is called a _unit_ vector if $\Vert$ $\ket{v}$ $\Vert$ = 1. A set of vectors is called _orthonormal_ if each vector in the set is a unit vector and each vector is orthogonal to an other.
+
+<h3> Task 2 </h3>
+
+Compute $ \braket{\psi}{\phi} $. What can you conclude about the two quantum states? 
+
+<h3> Solution </h3>
+$ \braket{\psi}{\phi}=\left (\dsqrttwo ~~~ \dfrac{i}{\sqrt{2}} \right )  \mymatrix{cc}{&\dsqrttwo \\ &\dfrac{i}{\sqrt{2}}  } = 1/2 - 1/2 = 0 $, indicating that the sates are orthogonal.
+
+<h3> Task 3 </h3>
+
+Check that $ \ket{\psi} $ and $ \ket{\phi} $ are valid quantum states.
+
+
+<h3> Solution </h3>
+We should check whether the norm of the vectors are equal to 1.
+$\Vert \ket{\psi} \Vert = \sqrt{\braket{\psi}{\psi}} =\myvector{\dsqrttwo ~~~ \dfrac{i}{\sqrt{2}}}  \mymatrix{cc}{&\dsqrttwo \\ &-\dfrac{i}{\sqrt{2}}  } = 1/2 + 1/2 = 1 $
+$\Vert \ket{\phi} \Vert = \sqrt{\braket{\phi}{\phi}} =\myvector{\dsqrttwo ~-~ \dfrac{i}{\sqrt{2}}}  \mymatrix{cc}{&\dsqrttwo \\ &\dfrac{i}{\sqrt{2}}  } = 1/2 + 1/2 = 1 $
+
+Note that given a quantum state $\ket{\psi}$, $ |\braket{\phi}{\psi}|^2 $ is the probability that state $\ket{\phi}$ will be observed after the measurement. When the states are orthogonal (such as $\ket{0}$ and $\ket{1}$ or $\ket{+}$ and $\ket{-}$, then this probability is equal to 0. If the states are identical, then this probability is equal to 1. 
+
+## Unitary matrices
+
+The _conjugate transpose_ of a matrix $ A $, denoted by $A^\dagger$ = $\overline{A^{T}}$ where the entries of $\overline{A}$ are the complex conjugate of the corresponding entries in A.
+
+<h3> Task 4 </h3>
+
+Given $A=  \mymatrix{cc}{3 + 7i & 0 \\ 2i & 4-i}$, compute $A^{\dagger}$:
+
+<h3> Solution </h3>
+We take the transpose and the conjugate to obtain $\mymatrix{cc}{3 - 7i & -2i \\ 0 & 4 + i}$
+
+If $A^{-1}$ = $A^\dagger$, then A is called _unitary_. Alternatively, an $ n \times n $ complex matrix is unitary if its column (also true for row) vectors form an orthonormal set, a set in which each vector in the set is a unit vector and each vector is orthogonal to each other.
+
+<h3> Task 5 </h3>
+
+Given $A=  \frac{1}{2} \mymatrix{cc}{1 + i & 1 - i \\ 1 - i & 1 + i}$, show that $A$ is unitary
+
+<h3> Solution </h3>
+$AA^\dagger=\frac{1}{4} \mymatrix{cc}{1 + i & 1 - i \\ 1 - i & 1 + i} \mymatrix{cc}{1 - i & 1 + i \\ 1 + i & 1 - i} = \frac{1}{4} \mymatrix{cc}{4 & 0 \\ 0 & 4}=\mymatrix{cc}{1 & 0 \\ 0 & 1} = I$
+	
+	
+Thus A is unitary.
