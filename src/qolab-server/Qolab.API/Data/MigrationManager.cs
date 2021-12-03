@@ -31,12 +31,13 @@ namespace Qolab.API.Data
 
         public static void Seed(DataContext dataContext)
         {
+            var admin = new User { Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Username = "admin" };
             var alice = new User { Id = Guid.Parse("8509b08d-d290-4e1f-95e8-f47c8ad2828e"), Username = "alice" };
             var bob = new User { Id = Guid.Parse("2e1ab555-0a05-4921-adbd-0d01d1a0340f"), Username = "bob" };
             var charlie = new User { Id = Guid.Parse("37889ca9-0bfc-426b-832e-5a9ed0edf98f"), Username = "charlie" };
             var eve = new User { Id = Guid.Parse("c747437e-16eb-4ad4-b68f-4915875f3b72"), Username = "eve" };
 
-            dataContext.Users.AddRange(new List<User> { alice, bob, charlie, eve });
+            dataContext.Users.AddRange(new List<User> { admin, alice, bob, charlie, eve });
 
             var paperId = Guid.Parse("1601da1c-f7d9-4a18-acf6-eda0289a3bb3");
             var paper = new Paper

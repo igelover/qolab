@@ -100,5 +100,29 @@ namespace Qolab.API.Controllers
             var result = await _manager.DeletePaperAsync(id);
             return result is null ? NotFound() : NoContent();
         }
+
+        /// <summary>
+        /// Imports a paper info from arxiv.org
+        /// </summary>
+        /// <param name="url">The paper arxiv url, for example https://arxiv.org/abs/2112.00187</param>
+        /// <returns>The existing or created paper</returns>
+        [HttpPost("import")]
+        public async Task<ActionResult<PaperDto>> ImportFromArxivAsync([FromBody] string url)
+        {
+            var arxivUrl = "https://arxiv.org/abs/";
+            if (!url.StartsWith(arxivUrl))
+            {
+                return BadRequest($"Only imports from {arxivUrl} are currently supported!");
+            }
+
+            var result = await _manager.ImportFromArxivAsync(url);
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            return CreatedAtAction(nameof(GetPaper), new { id = result.Id }, result);
+        }
+
     }
 }

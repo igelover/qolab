@@ -4,8 +4,9 @@ using Npgsql;
 using Qolab.API.Data;
 using Qolab.API.Entities;
 using Qolab.API.Models;
+using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
-using static Qolab.API.Models.Enums;
+using System.Xml;
 
 namespace Qolab.API.Managers
 {
@@ -25,8 +26,8 @@ namespace Qolab.API.Managers
         public async Task<PaperDto?> GetPaperAsync(Guid id)
         {
             var paper = await _context.Papers
-                                        .Include(paper => paper.CreatedBy)
-                                        .FirstOrDefaultAsync(x => x.Id == id);
+                                      .Include(paper => paper.CreatedBy)
+                                      .FirstOrDefaultAsync(x => x.Id == id);
 
             return paper?.ToDto();
         }
@@ -63,13 +64,41 @@ namespace Qolab.API.Managers
             return result.Select(paper => paper.ToDto());
         }
 
+        private (int? publishYear, int? publishMonth, int? publishDay) GetPublishDateInfo(string? publishDate)
+        {
+            int publishYear = 0;
+            int publishMonth = 0;
+            int publishDay = 0;
+            var publishDateParts = publishDate?.Split('-');
+            if (publishDateParts?.Length > 0)
+            {
+                _ = int.TryParse(publishDateParts[0], out publishYear);
+            }
+            if (publishDateParts?.Length > 1)
+            {
+                _ = int.TryParse(publishDateParts[1], out publishMonth);
+            }
+            if (publishDateParts?.Length > 2)
+            {
+                _ = int.TryParse(publishDateParts[2], out publishDay);
+            }
+
+            return (publishYear > 0 ? publishYear: null, publishMonth > 0 ? publishMonth : null, publishDay > 0 ? publishDay : null);
+        }
+
         public async Task<PaperDto> CreatePaperAsync(PaperDto paperDto)
         {
+            var (publishYear, publishMonth, publishDay) = GetPublishDateInfo(paperDto.PublishDate);
+            
             var paper = new Paper()
             {
                 Title = paperDto.Title,
                 Abstract = paperDto.Abstract,
                 Authors = string.Join('¦', paperDto.Authors),
+                PublishYear = publishYear,
+                PublishMonth = publishMonth,
+                PublishDay = publishDay,
+                Url = paperDto.Url,
                 CreatedById = paperDto.CreatedById
             };
             var entry = await _context.Papers.AddAsync(paper);
@@ -85,9 +114,15 @@ namespace Qolab.API.Managers
             var paper = _context.Papers.FirstOrDefault(paper => paper.Id == paperDto.Id);
             if (paper == null) return null;
 
+            var (publishYear, publishMonth, publishDay) = GetPublishDateInfo(paperDto.PublishDate);
+
             paper.Title = paperDto.Title;
             paper.Abstract = paperDto.Abstract;
             paper.Authors = string.Join('¦', paperDto.Authors);
+            paper.PublishYear = publishYear;
+            paper.PublishMonth = publishMonth;
+            paper.PublishDay = publishDay;
+            paper.Url = paperDto.Url;
 
             try
             {
@@ -118,6 +153,45 @@ namespace Qolab.API.Managers
                 throw;
             }
             return paper;
+        }
+
+        public async Task<PaperDto?> ImportFromArxivAsync(string url)
+        {
+            var existingPaper = _context.Papers
+                                        .Include(paper => paper.CreatedBy)
+                                        .FirstOrDefault(p => p.Url == url);
+
+            var parts = url.Split('/');
+            var arxivUrl = $"http://export.arxiv.org/api/query?id_list={parts[parts.Length - 1]}";
+            var client = new HttpClient();
+            var response = await client.GetStringAsync(arxivUrl);
+            var xmlReader = XmlReader.Create(new StringReader(response));
+            var feed = SyndicationFeed.Load(xmlReader);
+
+            if (feed.Items.Any())
+            {
+                var item = feed.Items.First();
+                var newPaper = new PaperDto
+                {
+                    Title = item.Title.Text,
+                    Authors = item.Authors.Select(a => a.Name),
+                    Abstract = item.Summary.Text,
+                    PublishDate = item.PublishDate.ToString("yyyy-MM-dd"),
+                    Url = url,
+                    CreatedById = Guid.Parse("00000000-0000-0000-0000-000000000001")
+                };
+
+                if (existingPaper is null)
+                {
+                    return await CreatePaperAsync(newPaper);
+                }
+                else
+                {
+                    newPaper.Id = existingPaper.Id;
+                    return await UpdatePaperAsync(newPaper);
+                }
+            }
+            return null;
         }
     }
 }
