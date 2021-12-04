@@ -32,7 +32,9 @@ https://github.com/igelover/qolab
   
 # Presentation Video and PDF link 📝
 <!-- Links to your presentation video and PDF. Please make sure they are accessible to the judges. -->
-To be updated
+[Presentation link](./docs/QolabPresentation.pdf)
+
+[Video link](https://youtu.be/g-cP3JjrIWo)
 
 <!-- End of Submission. Scroll above and fill up the sections as per the description -->
 
