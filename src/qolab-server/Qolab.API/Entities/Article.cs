@@ -27,6 +27,15 @@ namespace Qolab.API.Entities
 
         public Paper? Paper { get; set; }
 
+        public void FromDto(ArticleDto articleDto)
+        {
+            Title = articleDto.Title;
+            Summary = articleDto.Summary;
+            Tags = string.Join('¦', articleDto.Tags);
+            Content = articleDto.Content;
+            CreatedById = articleDto.CreatedById;
+        }
+
         public ArticleShortDto ToShortDto()
         {
             return new ArticleShortDto

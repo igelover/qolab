@@ -84,20 +84,19 @@ namespace Qolab.API.Managers
 
         public async Task<ArticleDto> CreateArticleAsync(ArticleDto articleDto)
         {
-            var article = new Article()
-            {
-                Title = articleDto.Title,
-                Summary = articleDto.Summary,
-                Tags = string.Join('¦', articleDto.Tags),
-                Content = articleDto.Content,
-                CreatedById = articleDto.CreatedById
-            };
+            var article = new Article();
+            article.FromDto(articleDto);
+
             var entry = await _context.Articles.AddAsync(article);
             await _context.SaveChangesAsync();
-            var newArticle = await _context.Articles
-                                           .Include(article => article.CreatedBy)
-                                           .FirstAsync(article => article.Id == entry.Entity.Id);
-            return newArticle.ToDto();
+
+            if (articleDto.Paper is not null)
+            {
+                var newArticle = await LinkArticlePaperAsync(entry.Entity.Id, articleDto.Paper.Id);
+                return newArticle ?? await GetArticleAsync(entry.Entity.Id);
+            }
+
+            return await GetArticleAsync(entry.Entity.Id);
         }
 
         public async Task<ArticleDto?> UpdateArticleAsync(ArticleDto articleDto)
@@ -105,10 +104,8 @@ namespace Qolab.API.Managers
             var article = _context.Articles.FirstOrDefault(article => article.Id == articleDto.Id);
             if (article == null) return null;
 
-            article.Title = articleDto.Title;
-            article.Summary = articleDto.Summary;
-            article.Tags = string.Join('¦', articleDto.Tags);
-            article.Content = articleDto.Content;
+            article.FromDto(articleDto);
+            article.LastUpdated = DateTime.UtcNow;
 
             try
             {
@@ -119,6 +116,30 @@ namespace Qolab.API.Managers
             catch (DbUpdateConcurrencyException ex)
             {
                 _logger.LogError(ex, "Error while updating article {articleId}", articleDto.Id);
+                throw;
+            }
+        }
+
+        public async Task<ArticleDto?> LinkArticlePaperAsync(Guid articleId, Guid paperId)
+        {
+            var article = _context.Articles.FirstOrDefault(article => article.Id == articleId);
+            if (article == null) return null;
+
+            var paper = _context.Papers.FirstOrDefault(paper => paper.Id == paperId);
+            if (article == null) return null;
+
+            article.Paper = paper;
+            article.LastUpdated = DateTime.UtcNow;
+
+            try
+            {
+                _context.Entry(article).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return await GetArticleAsync(articleId);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Error while linking article {articleId} with paper {paperId}", articleId, paperId);
                 throw;
             }
         }

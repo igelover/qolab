@@ -41,6 +41,42 @@ namespace Qolab.API.Entities
             };
         }
 
+        public static (int? publishYear, int? publishMonth, int? publishDay) GetPublishDateInfo(string? publishDate)
+        {
+            int publishYear = 0;
+            int publishMonth = 0;
+            int publishDay = 0;
+            var publishDateParts = publishDate?.Split('-');
+            if (publishDateParts?.Length > 0)
+            {
+                _ = int.TryParse(publishDateParts[0], out publishYear);
+            }
+            if (publishDateParts?.Length > 1)
+            {
+                _ = int.TryParse(publishDateParts[1], out publishMonth);
+            }
+            if (publishDateParts?.Length > 2)
+            {
+                _ = int.TryParse(publishDateParts[2], out publishDay);
+            }
+
+            return (publishYear > 0 ? publishYear : null, publishMonth > 0 ? publishMonth : null, publishDay > 0 ? publishDay : null);
+        }
+
+        public void FromDto(PaperDto paperDto)
+        {
+            var (publishYear, publishMonth, publishDay) = GetPublishDateInfo(paperDto.PublishDate);
+            Title = paperDto.Title;
+            Authors = string.Join('¦', paperDto.Authors);
+            Abstract = paperDto.Abstract;
+            PublishYear = publishYear;
+            PublishMonth = publishMonth;
+            PublishDay = publishDay;
+            Url = paperDto.Url;
+            DOI = paperDto.DOI;
+            CreatedById = paperDto.CreatedById;
+        }
+
         private static string? GetPublishDate(int? publishYear, int? publishMonth, int? publishDay)
         {
             if (publishYear.HasValue && publishMonth.HasValue && publishDay.HasValue)

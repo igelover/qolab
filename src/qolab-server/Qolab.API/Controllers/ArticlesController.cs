@@ -91,6 +91,19 @@ namespace Qolab.API.Controllers
         }
 
         /// <summary>
+        /// Links an existing paper to an existing article
+        /// </summary>
+        /// <param name="id">The article internal ID</param>
+        /// <param name="paperId">The paper internal ID</param>
+        /// <returns>The updated article object</returns>
+        [HttpPost("{id}/paper/{paperId}")]
+        public async Task<ActionResult<ArticleDto>> LinkArticlePaper([FromRoute] Guid id, [FromRoute] Guid paperId)
+        {
+            var result = await _manager.LinkArticlePaperAsync(id, paperId);
+            return result is null ? NotFound() : Ok(result);
+        }
+
+        /// <summary>
         /// Deletes an existing article
         /// </summary>
         /// <param name="id">The article internal ID</param>
