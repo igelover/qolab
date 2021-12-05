@@ -25,7 +25,7 @@ Please refer to the instructions [here](./docs/Build.md) to build and run the ap
 # Submission | Summary Report 📝
 <!-- Short Summary of your project for the judges. Should not exceed 500 words. You can fill this in the later stages of the JAM close to submission -->
 [Summary report](./docs/SummaryReport.pdf)
-  
+
 # Repository Link 📝
 <!-- Link to your Git repository with the submission as per requirements. -->
 https://github.com/igelover/qolab
@@ -35,6 +35,8 @@ https://github.com/igelover/qolab
 [Presentation link](./docs/QolabPresentation.pdf)
 
 [Video link](https://youtu.be/g-cP3JjrIWo)
+
+[Storyboard](./docs/Storyboard.pdf)
 
 <!-- End of Submission. Scroll above and fill up the sections as per the description -->
 
