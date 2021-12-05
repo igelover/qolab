@@ -24,7 +24,7 @@ Please refer to the instructions [here](./docs/Build.md) to build and run the ap
 
 # Submission | Summary Report 📝
 <!-- Short Summary of your project for the judges. Should not exceed 500 words. You can fill this in the later stages of the JAM close to submission -->
-To be updated
+[Summary report](./docs/SummaryReport.pdf)
   
 # Repository Link 📝
 <!-- Link to your Git repository with the submission as per requirements. -->
